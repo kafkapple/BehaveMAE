@@ -41,6 +41,24 @@ The easiest way to set up the environment is by using the provided `environment.
   conda activate behavemae
   ```
 
+
+The evaluation scripts also rely on `GNU Parallel` for faster processing. If you encounter a `parallel: command not found` error, please install it using your system's package manager. For example, on Debian/Ubuntu:
+```bash
+sudo apt-get update && sudo apt-get install parallel
+```
+
+## 🔧 Troubleshooting
+
+*   **`AttributeError: module 'torch.optim' has no attribute '_multi_tensor'`**: This error may occur with recent versions of PyTorch where internal APIs have changed. The fix is applied in `main_pretrain.py` by changing `torch.optim._multi_tensor.AdamW` to the public `torch.optim.AdamW`. If you encounter this, ensure your code is up-to-date with the repository.
+
+*   **`CUDA out of memory` on consumer GPUs (e.g., RTX 3060)**: The default `batch_size` of 512 in the training scripts (e.g., `scripts/shot7m2/train_hBehaveMAE.sh`) is configured for high-end GPUs (like A100 or V100). To run pre-training on GPUs with less VRAM (e.g., 12GB), you need to adjust the batch size and use gradient accumulation to maintain the effective batch size.
+
+    For example, in `scripts/shot7m2/train_hBehaveMAE.sh`, we have modified the parameters as follows:
+    -   `--batch_size` changed from `512` to `64`.
+    -   `--accum_iter 8` was added.
+
+    This keeps the effective batch size at `64 * 8 = 512` while significantly reducing memory consumption. You may need to tune these values depending on your specific GPU.
+
 ## ➡️ Data Preparation
 
 For downloading and preparing the three benchmarks Shot7M2 ([download here 🏀](https://huggingface.co/datasets/amathislab/SHOT7M2)), hBABEL, and MABe22 we compiled detailed instructions in the [datasets README](datasets/README.md).
