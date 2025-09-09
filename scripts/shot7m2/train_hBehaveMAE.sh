@@ -4,7 +4,8 @@ GPUS=$1
 
 common_args="--dataset shot7m2 \
     --path_to_data_dir data/Shot7M2/train/train_dictionary_poses.npy
-    --batch_size 512 \
+    --batch_size 64 \
+    --accum_iter 8 \
     --model hbehavemae \
     --input_size 400 1 72 \
     --stages 2 3 4 \
